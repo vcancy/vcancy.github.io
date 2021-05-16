@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="介绍Swarm 在 Docker 1.12 版本之前属于一个独立的项目，在 Docker 1.12 版本发布之后，该项目合并到了 Docker 中，成为 Docker 的一个子命令。目前，Swarm 是 Docker 社区提供的唯一一个原生支持 Docker 集群管理的工具。它可以把多个 Docker 主机组成的系统转换为单一的虚拟 Docker 主机，使得容器可以组成跨主机的子网网络。 Swa">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派docker swarm集群部署 portainer 管理实践">
+<meta property="og:url" content="http://yoursite.com/2018/05/19/树莓派docker-swarm集群部署-portainer-管理实践/index.html">
+<meta property="og:site_name" content="Vcancy&#39;s Home">
+<meta property="og:description" content="介绍Swarm 在 Docker 1.12 版本之前属于一个独立的项目，在 Docker 1.12 版本发布之后，该项目合并到了 Docker 中，成为 Docker 的一个子命令。目前，Swarm 是 Docker 社区提供的唯一一个原生支持 Docker 集群管理的工具。它可以把多个 Docker 主机组成的系统转换为单一的虚拟 Docker 主机，使得容器可以组成跨主机的子网网络。 Swa">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/2981143-7fdab9d16e5aedbf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-05-19T02:25:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="树莓派docker swarm集群部署 portainer 管理实践">
+<meta name="twitter:description" content="介绍Swarm 在 Docker 1.12 版本之前属于一个独立的项目，在 Docker 1.12 版本发布之后，该项目合并到了 Docker 中，成为 Docker 的一个子命令。目前，Swarm 是 Docker 社区提供的唯一一个原生支持 Docker 集群管理的工具。它可以把多个 Docker 主机组成的系统转换为单一的虚拟 Docker 主机，使得容器可以组成跨主机的子网网络。 Swa">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/2981143-7fdab9d16e5aedbf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/19/树莓派docker-swarm集群部署-portainer-管理实践/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>树莓派docker swarm集群部署 portainer 管理实践 | Vcancy's Home</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vcancy's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">电影|阅读|记录</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/19/树莓派docker-swarm集群部署-portainer-管理实践/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Vcancy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vcancy's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">树莓派docker swarm集群部署 portainer 管理实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-19T10:09:00+08:00">2018-05-19</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/树莓派/" itemprop="url" rel="index"><span itemprop="name">树莓派</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/2981143-7fdab9d16e5aedbf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="portainer"></p>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Swarm 在 Docker 1.12 版本之前属于一个独立的项目，在 Docker 1.12 版本发布之后，该项目合并到了 Docker 中，成为 Docker 的一个子命令。目前，Swarm 是 Docker 社区提供的唯一一个原生支持 Docker 集群管理的工具。它可以把多个 Docker 主机组成的系统转换为单一的虚拟 Docker 主机，使得容器可以组成跨主机的子网网络。</p>
+<p>Swarm 是目前 Docker 官方唯一指定（绑定）的集群管理工具。Docker 1.12 内嵌了 swarm mode 集群管理模式。</p>
+<a id="more"></a>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><h4 id="Docker-安装及配置"><a href="#Docker-安装及配置" class="headerlink" title="Docker 安装及配置"></a>Docker 安装及配置</h4><p>实现docker swarm集群需要多台服务器实现集群的，这里我准备了2台服务器，且操作系统都是 raspbian-stretch-lite，IP分别是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">192.168.2.101 rpi1</span><br><span class="line">192.168.2.102 rpi2</span><br></pre></td></tr></table></figure></p>
+<p>2台服务器上分别执行以下命令，安装docker</p>
+<h4 id="配置apt"><a href="#配置apt" class="headerlink" title="配置apt"></a>配置apt</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>将文件里的默认的官方软件源用# 注释掉,添加以下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main contrib non-free rpi</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo  nano  /etc/apt/sources.list.d/raspi.list</span><br></pre></td></tr></table></figure>
+<p>将文件里的默认的官方软件源用# 注释掉,添加以下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.ustc.edu.cn/archive.raspberrypi.org/ stretch main ui</span><br></pre></td></tr></table></figure>
+<h4 id="添加docker-apt源"><a href="#添加docker-apt源" class="headerlink" title="添加docker apt源"></a>添加docker apt源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;deb [arch=armhf] https://download.docker.com/linux/debian \</span><br><span class="line">     $(lsb_release -cs) stable&quot; | \</span><br><span class="line">    sudo tee /etc/apt/sources.list.d/docker.list</span><br></pre></td></tr></table></figure>
+<h4 id="配置Docker官方APT-GPG-key"><a href="#配置Docker官方APT-GPG-key" class="headerlink" title="配置Docker官方APT GPG key"></a>配置Docker官方APT GPG key</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-key fingerprint 0EBFCD88</span><br></pre></td></tr></table></figure>
+<p>输出对比是否是一致的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pub   4096R/0EBFCD88 2017-02-22</span><br><span class="line">      Key fingerprint = 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid                  Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   4096R/F273FCD8 2017-02-22</span><br></pre></td></tr></table></figure></p>
+<h4 id="更新apt"><a href="#更新apt" class="headerlink" title="更新apt"></a>更新apt</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt update</span><br></pre></td></tr></table></figure>
+<h4 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install docker-ce</span><br></pre></td></tr></table></figure>
+<h4 id="docker配置国内镜像"><a href="#docker配置国内镜像" class="headerlink" title="docker配置国内镜像"></a>docker配置国内镜像</h4><p>在 /etc/docker/daemon.json 中写入如下内容（如果文件不存在请新建该文件）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [</span><br><span class="line">    &quot;https://registry.docker-cn.com&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="docker-命令"><a href="#docker-命令" class="headerlink" title="docker 命令"></a>docker 命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">systemctl start docker // 启动docker服务</span><br><span class="line">systemctl stop docker // 停止docker服务</span><br><span class="line">systemctl restart docker // 重启docker服务</span><br><span class="line">systemctl status docker // 查看docker服务状态</span><br><span class="line">systemctl enable docker // 开机启动docker服务</span><br><span class="line">systemctl disable docker // 取消开机启动docker服务</span><br></pre></td></tr></table></figure>
+<h3 id="swarm-配置"><a href="#swarm-配置" class="headerlink" title="swarm 配置"></a>swarm 配置</h3><p>docker 已内置swarm，无需再手动pull安装</p>
+<p>我们有2个服务器作为集群的2个节点，其中，ser1, manager节点，ser2 作为worker节点</p>
+<h4 id="初始化集群"><a href="#初始化集群" class="headerlink" title="初始化集群"></a>初始化集群</h4><p>语法:  </p>
+<pre><code>docker swarm init [OPTIONS]
+</code></pre><p>Options: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">--advertise-addr: 多网卡的情况下，指定需要使用的ip</span><br><span class="line"></span><br><span class="line">--listen-addr: 指定监听的 ip 与端口</span><br><span class="line"></span><br><span class="line">--availability: 节点的有效性(&quot;active&quot;|&quot;pause&quot;|&quot;drain&quot;)</span><br><span class="line">Active：集群中该Node可以被指派Task</span><br><span class="line"></span><br><span class="line">Pause：集群中该Node不可以被指派新的Task，但是其他已经存在的Task保持运行</span><br><span class="line"></span><br><span class="line">Drain：集群中该Node不可以被指派新的Task，Swarm Scheduler停掉已经存在的Task，并将它们调度到可用的Node上</span><br></pre></td></tr></table></figure>
+<p>示例</p>
+<pre><code>docker swarm init --advertise-addr 192.168.2.101 --listen-addr 192.168.2.101:2377
+</code></pre><h4 id="添加节点"><a href="#添加节点" class="headerlink" title="添加节点"></a>添加节点</h4><pre><code>docker swarm join [OPTIONS] HOST:PORT
+</code></pre><p>Options</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">--token: 所需加入集群的token</span><br><span class="line"></span><br><span class="line">--advertise-addr: 多网卡的情况下，指定需要使用的ip</span><br><span class="line"></span><br><span class="line">--listen-addr: 指定监听的 ip 与端口</span><br><span class="line"></span><br><span class="line">--availability: 节点的有效性(&quot;active&quot;|&quot;pause&quot;|&quot;drain&quot;)</span><br><span class="line"></span><br><span class="line">Active：集群中该Node可以被指派Task</span><br><span class="line"></span><br><span class="line">Pause：集群中该Node不可以被指派新的Task，但是其他已经存在的Task保持运行</span><br><span class="line"></span><br><span class="line">Drain：集群中该Node不可以被指派新的Task，Swarm Scheduler停掉已经存在的Task，并将它们调度到可用的Node上</span><br></pre></td></tr></table></figure>
+<h4 id="添加manager节点"><a href="#添加manager节点" class="headerlink" title="添加manager节点"></a>添加manager节点</h4><p>ser1已经是管理节点，这里介绍如何添加另一个管理节点。swarm支持多个管理节点，但是只会有一个leader。</p>
+<p>首先要获取manager的token，在ser1上执行以下命令：</p>
+<pre><code>docker swarm join-token manager
+</code></pre><p>获取到manager token，然后执行以下命令，将ser2服务器作为manager节点加入集群<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker swarm join \</span><br><span class="line">--advertise-addr 192.168.2.102 \</span><br><span class="line">--listen-addr 192.168.2.101:2377 \</span><br><span class="line">--token SWMTKN-1-29ynh5uyfiiospy4fsm4pd4xucyji2rn0oj4b4ak4s7a37syf9-ajkrv2ctjr5cmxzuij75tbrmz \</span><br><span class="line">192.168.2.101:2377</span><br></pre></td></tr></table></figure></p>
+<h4 id="worker节点"><a href="#worker节点" class="headerlink" title="worker节点"></a>worker节点</h4><p>首先要获取worker的token，在ser1上执行以下命令：</p>
+<pre><code>docker swarm join-token worker
+</code></pre><p>获取到worker token，然后执行以下命令，将ser2服务器作为worker节点加入集群:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker swarm join \</span><br><span class="line">--advertise-addr 192.168.2.102 \</span><br><span class="line">--listen-addr 192.168.2.101:2377 \</span><br><span class="line">--token SWMTKN-1-29ynh5uyfiiospy4fsm4pd4xucyji2rn0oj4b4ak4s7a37syf9-a53g5oimn8zeaqomm5vxgcoj7 \</span><br><span class="line">192.168.2.101:2377</span><br></pre></td></tr></table></figure></p>
+<h4 id="查看节点"><a href="#查看节点" class="headerlink" title="查看节点"></a>查看节点</h4><p>以下命令只能在manager节点上执行</p>
+<p>查出集群的节点列表</p>
+<p>语法</p>
+<pre><code>docker node ls [OPTIONS]
+</code></pre><p>Options</p>
+<p>–filter , -f : 根据条件筛选查询结果</p>
+<p>示例</p>
+<pre><code>docker node ls
+</code></pre><h4 id="修改节点"><a href="#修改节点" class="headerlink" title="修改节点"></a>修改节点</h4><p>以下命令只能在manager节点上执行</p>
+<h5 id="节点降级"><a href="#节点降级" class="headerlink" title="节点降级"></a>节点降级</h5><p>将manager节点降为worker</p>
+<p>语法</p>
+<pre><code>docker node demote NODE [NODE...]
+</code></pre><p>示例</p>
+<pre><code>docker node demote rpi2
+</code></pre><h5 id="节点升级"><a href="#节点升级" class="headerlink" title="节点升级"></a>节点升级</h5><p>将worker节点提升为manager</p>
+<p>语法</p>
+<pre><code>docker node promote NODE [NODE...]
+</code></pre><p>示例</p>
+<pre><code>docker node promote rpi
+</code></pre><h5 id="修改节点参数"><a href="#修改节点参数" class="headerlink" title="修改节点参数"></a>修改节点参数</h5><p>语法</p>
+<pre><code>docker node update [OPTIONS] NODE
+</code></pre><p>Options</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">--availability : 节点的有效性(&quot;active&quot;|&quot;pause&quot;|&quot;drain&quot;)</span><br><span class="line"></span><br><span class="line">Active：集群中该Node可以被指派Task</span><br><span class="line"></span><br><span class="line">Pause：集群中该Node不可以被指派新的Task，但是其他已经存在的Task保持运行</span><br><span class="line"></span><br><span class="line">Drain：集群中该Node不可以被指派新的Task，Swarm Scheduler停掉已经存在的Task，并将它们调度到可用的Node上</span><br><span class="line"></span><br><span class="line">--role : 节点角色（“worker”|“manager”）</span><br></pre></td></tr></table></figure>
+<p>示例</p>
+<pre><code>docker node update --availability Active rpi2
+</code></pre><h4 id="退出节点"><a href="#退出节点" class="headerlink" title="退出节点"></a>退出节点</h4><h5 id="docker-node-rm"><a href="#docker-node-rm" class="headerlink" title="docker node rm"></a>docker node rm</h5><p>从集群中移除一个或多个节点（manager 节点执行）</p>
+<p>语法</p>
+<pre><code>docker node rm [OPTIONS] NODE [NODE...]
+</code></pre><p>Options</p>
+<pre><code>--force , -f : 强制从集群中删除节点
+</code></pre><p>示例</p>
+<pre><code>docker node rm -f rpi2
+</code></pre><h5 id="docker-swarm-leave"><a href="#docker-swarm-leave" class="headerlink" title="docker swarm leave"></a>docker swarm leave</h5><p>退出集群（需要退出的节点执行）</p>
+<p>语法</p>
+<pre><code>docker swarm leave [OPTIONS]
+</code></pre><p>Options</p>
+<pre><code>--force , -f : 强制从集群中删除节点
+</code></pre><p>示例</p>
+<pre><code>docker swarm leave
+</code></pre><h3 id="应用部署"><a href="#应用部署" class="headerlink" title="应用部署"></a>应用部署</h3><h4 id="创建服务"><a href="#创建服务" class="headerlink" title="创建服务"></a>创建服务</h4><p>语法</p>
+<pre><code>docker service create [OPTIONS] IMAGE [COMMAND] [ARG...]
+</code></pre><p>Options</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">--detach , -d : 指定容器运行于前台还是后台，默认为false</span><br><span class="line">--name : 服务名称</span><br><span class="line">--network : 网络连接</span><br><span class="line">--publish , -p : 端口映射</span><br><span class="line">--env , -e : 设置环境变量</span><br><span class="line">--tty , -t : 分配tty设备，该可以支持终端登录</span><br><span class="line">--mount : 文件挂载</span><br><span class="line">--replicas : 指定任务数量</span><br></pre></td></tr></table></figure>
+<p>示例</p>
+<p>创建一个docker网络<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create --driver overlay swarm_test</span><br></pre></td></tr></table></figure></p>
+<p>创建一个2个副本的redis service</p>
+<pre><code>docker service create --replicas 2 --name redis -p 6379:6379 --network=swarm_test arm32v7/redis
+</code></pre><p>注意：rpi是arm架构的，只能使用arm docker镜像，现在docker官方已经有了arm镜像 </p>
+<p><a href="https://hub.docker.com/u/arm32v7/" target="_blank" rel="noopener">arm32v7</a></p>
+<p><a href="https://hub.docker.com/u/arm32v6/" target="_blank" rel="noopener">arm32v6</a></p>
+<h4 id="修改服务"><a href="#修改服务" class="headerlink" title="修改服务"></a>修改服务</h4><h4 id="修改服务参数"><a href="#修改服务参数" class="headerlink" title="修改服务参数"></a>修改服务参数</h4><p>语法</p>
+<pre><code>docker service update [OPTIONS] SERVICE
+</code></pre><p>Options<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">--detach , -d : 指定容器运行于前台还是后台</span><br><span class="line">--env-add : 增加环境变量</span><br><span class="line">--env-rm : 删除环境变量</span><br><span class="line">--mount-add : 增加文件挂载</span><br><span class="line">--mount-rm : 通过目标路径删除文件挂载</span><br><span class="line">--network-add : 增加网络设置</span><br><span class="line">--network-rm : 移除网络设置</span><br><span class="line">--publish-add : 增加端口映射</span><br><span class="line">--publish-rm : 通过目标端口移除端口映射</span><br><span class="line">--replicas : 修改任务数量</span><br></pre></td></tr></table></figure></p>
+<p>示例</p>
+<pre><code>docker service update --replicas 2 api_131
+</code></pre><h4 id="修改任务数量"><a href="#修改任务数量" class="headerlink" title="修改任务数量"></a>修改任务数量</h4><p>虽然通过docker service update命令也可以修改任务数量，但是docker还提供了一个修改任务数量的命令。</p>
+<p>该命令可以修改一个或多个服务的任务数量</p>
+<p>语法</p>
+<pre><code>docker service scale SERVICE=REPLICAS [SERVICE=REPLICAS...]
+</code></pre><p>示例</p>
+<pre><code>docker service scale ser1=3 ser2=5
+</code></pre><h3 id="查看服务"><a href="#查看服务" class="headerlink" title="查看服务"></a>查看服务</h3><h4 id="查看服务列表"><a href="#查看服务列表" class="headerlink" title="查看服务列表"></a>查看服务列表</h4><p>manager节点执行</p>
+<p>语法</p>
+<pre><code>docker service ls [OPTIONS]
+</code></pre><p>Options</p>
+<pre><code>--filter , -f : 过滤条件
+</code></pre><p>示例</p>
+<pre><code>docker service ls --filter name=redis
+</code></pre><h4 id="查看任务列表"><a href="#查看任务列表" class="headerlink" title="查看任务列表"></a>查看任务列表</h4><p>manager执行，可查看一个或多个服务的任务列表</p>
+<p>语法</p>
+<pre><code>docker service ps [OPTIONS] SERVICE [SERVICE...]
+</code></pre><p>Options</p>
+<pre><code>--filter , -f : 过滤条件
+</code></pre><p>示例</p>
+<pre><code>docker service ps redis
+</code></pre><h4 id="查看服务详情"><a href="#查看服务详情" class="headerlink" title="查看服务详情"></a>查看服务详情</h4><p>manager执行，可查看一个或多个服务的详细情况</p>
+<p>语法</p>
+<pre><code>docker service inspect [OPTIONS] SERVICE [SERVICE...]
+</code></pre><p>Options</p>
+<pre><code>--pretty : 格式化输出信息
+</code></pre><p>示例</p>
+<pre><code>docker service inspect redis
+</code></pre><h3 id="删除服务"><a href="#删除服务" class="headerlink" title="删除服务"></a>删除服务</h3><p>manager 执行，删除一个或多个服务</p>
+<p>语法</p>
+<pre><code>docker service rm SERVICE [SERVICE...]
+</code></pre><p>示例</p>
+<pre><code>docker service rm redis
+</code></pre><h3 id="查看服务日志"><a href="#查看服务日志" class="headerlink" title="查看服务日志"></a>查看服务日志</h3><p>manager执行，查看服务或任务的日志</p>
+<p>语法</p>
+<pre><code>docker service logs [OPTIONS] SERVICE|TASK
+</code></pre><p>Options</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--follow , -f : 跟随输出</span><br><span class="line">--tail : 显示最新的N条日志</span><br><span class="line">--since : 显示从某个时间开始的所有日志</span><br><span class="line">--timestamps , -t : 显示时间戳</span><br></pre></td></tr></table></figure>
+<p>示例</p>
+<pre><code>docker service logs -f redis
+</code></pre><h3 id="使用portainer管理docker-swarm集群"><a href="#使用portainer管理docker-swarm集群" class="headerlink" title="使用portainer管理docker swarm集群"></a>使用portainer管理docker swarm集群</h3><p>Portainer是个轻量级的Docker管理面板，和Rancher这种重量级选手没法比，Portainer倾向于单机的管理(后来发现能够添加多个单机节点切换着管理)，当然，在Docker搞出Swarm之后Portainer也借此实现了集群管理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 9000:9000 --name portainer --restart always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer:linux-arm-1.17.0</span><br></pre></td></tr></table></figure>
+<p>本文使用的portainer镜像为portainer/portainer:linux-arm-1.17.0</p>
+<p>参考</p>
+<p><a href="http://www.chairis.cn/blog/article/89" target="_blank" rel="noopener">Docker Swarm集群部署实践</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/17/Arduino-Blynk-第一个Demo/" rel="next" title="Arduino+Blynk 第一个Demo">
+                <i class="fa fa-chevron-left"></i> Arduino+Blynk 第一个Demo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/19/树莓派debian-9-stretch-替换apt-get国内源-安装docker-18-03-ce/" rel="prev" title="树莓派debian 9 stretch 替换apt-get国内源 安装docker 18.03 ce">
+                树莓派debian 9 stretch 替换apt-get国内源 安装docker 18.03 ce <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Vcancy" />
+            
+              <p class="site-author-name" itemprop="name">Vcancy</p>
+              <p class="site-description motion-element" itemprop="description">TO BE OR NOT TO BE.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">34</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/vcancy" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:yujie.teddy@outlook.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker-安装及配置"><span class="nav-number">2.1.</span> <span class="nav-text">Docker 安装及配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置apt"><span class="nav-number">2.2.</span> <span class="nav-text">配置apt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加docker-apt源"><span class="nav-number">2.3.</span> <span class="nav-text">添加docker apt源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置Docker官方APT-GPG-key"><span class="nav-number">2.4.</span> <span class="nav-text">配置Docker官方APT GPG key</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更新apt"><span class="nav-number">2.5.</span> <span class="nav-text">更新apt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装docker"><span class="nav-number">2.6.</span> <span class="nav-text">安装docker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#docker配置国内镜像"><span class="nav-number">2.7.</span> <span class="nav-text">docker配置国内镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-命令"><span class="nav-number">3.</span> <span class="nav-text">docker 命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#swarm-配置"><span class="nav-number">4.</span> <span class="nav-text">swarm 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化集群"><span class="nav-number">4.1.</span> <span class="nav-text">初始化集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加节点"><span class="nav-number">4.2.</span> <span class="nav-text">添加节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加manager节点"><span class="nav-number">4.3.</span> <span class="nav-text">添加manager节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#worker节点"><span class="nav-number">4.4.</span> <span class="nav-text">worker节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看节点"><span class="nav-number">4.5.</span> <span class="nav-text">查看节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改节点"><span class="nav-number">4.6.</span> <span class="nav-text">修改节点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#节点降级"><span class="nav-number">4.6.1.</span> <span class="nav-text">节点降级</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点升级"><span class="nav-number">4.6.2.</span> <span class="nav-text">节点升级</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改节点参数"><span class="nav-number">4.6.3.</span> <span class="nav-text">修改节点参数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#退出节点"><span class="nav-number">4.7.</span> <span class="nav-text">退出节点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#docker-node-rm"><span class="nav-number">4.7.1.</span> <span class="nav-text">docker node rm</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#docker-swarm-leave"><span class="nav-number">4.7.2.</span> <span class="nav-text">docker swarm leave</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用部署"><span class="nav-number">5.</span> <span class="nav-text">应用部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建服务"><span class="nav-number">5.1.</span> <span class="nav-text">创建服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改服务"><span class="nav-number">5.2.</span> <span class="nav-text">修改服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改服务参数"><span class="nav-number">5.3.</span> <span class="nav-text">修改服务参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改任务数量"><span class="nav-number">5.4.</span> <span class="nav-text">修改任务数量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看服务"><span class="nav-number">6.</span> <span class="nav-text">查看服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#查看服务列表"><span class="nav-number">6.1.</span> <span class="nav-text">查看服务列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看任务列表"><span class="nav-number">6.2.</span> <span class="nav-text">查看任务列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看服务详情"><span class="nav-number">6.3.</span> <span class="nav-text">查看服务详情</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除服务"><span class="nav-number">7.</span> <span class="nav-text">删除服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看服务日志"><span class="nav-number">8.</span> <span class="nav-text">查看服务日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用portainer管理docker-swarm集群"><span class="nav-number">9.</span> <span class="nav-text">使用portainer管理docker swarm集群</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vcancy</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.6</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

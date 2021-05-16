@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.6" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.6">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.6">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.6" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.6',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="String操作   方法 作用 示例 示例结果     set(name, value) 给name赋值为value redis.set(‘name’, ‘Bob’) True   get(name) 返回数据库中key为name的string的value redis.get(‘name’) b’Bob’   getset(name, value) 给数据库中key为name的string赋予值">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python redis操作">
+<meta property="og:url" content="http://yoursite.com/2018/06/08/python-redis/index.html">
+<meta property="og:site_name" content="Vcancy&#39;s Home">
+<meta property="og:description" content="String操作   方法 作用 示例 示例结果     set(name, value) 给name赋值为value redis.set(‘name’, ‘Bob’) True   get(name) 返回数据库中key为name的string的value redis.get(‘name’) b’Bob’   getset(name, value) 给数据库中key为name的string赋予值">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-08T09:03:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python redis操作">
+<meta name="twitter:description" content="String操作   方法 作用 示例 示例结果     set(name, value) 给name赋值为value redis.set(‘name’, ‘Bob’) True   get(name) 返回数据库中key为name的string的value redis.get(‘name’) b’Bob’   getset(name, value) 给数据库中key为name的string赋予值">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/06/08/python-redis/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>python redis操作 | Vcancy's Home</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vcancy's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">电影|阅读|记录</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/08/python-redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Vcancy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vcancy's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python redis操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-08T17:03:16+08:00">2018-06-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="String操作"><a href="#String操作" class="headerlink" title="String操作"></a>String操作</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>set(name, value)</td>
+<td>给name赋值为value</td>
+<td>redis.set(‘name’, ‘Bob’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>get(name)</td>
+<td>返回数据库中key为name的string的value</td>
+<td>redis.get(‘name’)</td>
+<td>b’Bob’</td>
+</tr>
+<tr>
+<td>getset(name, value)</td>
+<td>给数据库中key为name的string赋予值value并返回上次的value</td>
+<td>redis.getset(‘name’, ‘Mike’)</td>
+<td>b’Bob’</td>
+</tr>
+<tr>
+<td>mget(keys, *args)</td>
+<td>返回多个key对应的value</td>
+<td>redis.mget([‘name’, ‘nickname’])</td>
+<td>[b’Mike’, b’Miker’]</td>
+</tr>
+<tr>
+<td>setnx(name, value)</td>
+<td>如果key不存在才设置value</td>
+<td>redis.setnx(‘newname’, ‘James’)</td>
+<td>第一次运行True，第二次False</td>
+</tr>
+<tr>
+<td>setex(name, time, value)</td>
+<td>设置可以对应的值为string类型的value，并指定此键值对应的有效期</td>
+<td>redis.setex(‘name’, 1, ‘James’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>setrange(name, offset, value)</td>
+<td>设置指定key的value值的子字符串</td>
+<td>redis.set(‘name’, ‘Hello’) redis.setrange(‘name’, 6, ‘World’)</td>
+<td>11，修改后的字符串长度</td>
+</tr>
+<tr>
+<td>mset(mapping)</td>
+<td>批量赋值</td>
+<td>redis.mset({‘name1’: ‘Durant’, ‘name2’: ‘James’})</td>
+<td>True</td>
+</tr>
+<tr>
+<td>msetnx(mapping)</td>
+<td>key均不存在时才批量赋值</td>
+<td>redis.msetnx({‘name3’: ‘Smith’, ‘name4’: ‘Curry’})</td>
+<td>True</td>
+</tr>
+<tr>
+<td>incr(name, amount=1)</td>
+<td>key为name的value增值操作，默认1，key不存在则被创建并设为amount</td>
+<td>redis.incr(‘age’, 1)</td>
+<td>1，即修改后的值</td>
+</tr>
+<tr>
+<td>decr(name, amount=1)</td>
+<td>key为name的value减值操作，默认1，key不存在则被创建并设置为-amount</td>
+<td>redis.decr(‘age’, 1)</td>
+<td>-1，即修改后的值</td>
+</tr>
+<tr>
+<td>append(key, value)</td>
+<td>key为name的string的值附加value</td>
+<td>redis.append(‘nickname’, ‘OK’)</td>
+<td>13，即修改后的字符串长度</td>
+</tr>
+<tr>
+<td>substr(name, start, end=-1)</td>
+<td>返回key为name的string的value的子串</td>
+<td>redis.substr(‘name’, 1, 4)</td>
+<td>b’ello’</td>
+</tr>
+<tr>
+<td>getrange(key, start, end)</td>
+<td>获取key的value值从start到end的子字符串</td>
+<td>redis.getrange(‘name’, 1, 4)</td>
+<td>b’ello’</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Key操作"><a href="#Key操作" class="headerlink" title="Key操作"></a>Key操作</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exists(name)</td>
+<td>判断一个key是否存在</td>
+<td>redis.exists(‘name’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>delete(name)</td>
+<td>删除一个key</td>
+<td>redis.delete(‘name’)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>type(name)</td>
+<td>判断key类型</td>
+<td>redis.type(‘name’)</td>
+<td>b’string’</td>
+</tr>
+<tr>
+<td>keys(pattern)</td>
+<td>获取所有符合规则的key</td>
+<td>redis.keys(‘n*’)</td>
+<td>[b’name’]</td>
+</tr>
+<tr>
+<td>randomkey()</td>
+<td>获取随机的一个key</td>
+<td>randomkey()</td>
+<td>b’name’</td>
+</tr>
+<tr>
+<td>rename(src, dst)</td>
+<td>将key重命名</td>
+<td>redis.rename(‘name’, ‘nickname’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dbsize()</td>
+<td>获取当前数据库中key的数目</td>
+<td>dbsize()</td>
+<td>100</td>
+</tr>
+<tr>
+<td>expire(name, time)</td>
+<td>设定key的过期时间，单位秒</td>
+<td>redis.expire(‘name’, 2)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>ttl(name)</td>
+<td>获取key的过期时间，单位秒，-1为永久不过期</td>
+<td>redis.ttl(‘name’)</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>move(name, db)</td>
+<td>将key移动到其他数据库</td>
+<td>move(‘name’, 2)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>flushdb()</td>
+<td>删除当前选择数据库中的所有key</td>
+<td>flushdb()</td>
+<td>True</td>
+</tr>
+<tr>
+<td>flushall()</td>
+<td>删除所有数据库中的所有key</td>
+<td>flushall()</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<h3 id="List操作"><a href="#List操作" class="headerlink" title="List操作"></a>List操作</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rpush(name, *values)</td>
+<td>在key为name的list尾添加值为value的元素，可以传多个</td>
+<td>redis.rpush(‘list’, 1, 2, 3)</td>
+<td>3，list大小</td>
+</tr>
+<tr>
+<td>lpush(name, *values)</td>
+<td>在key为name的list头添加值为value的元素，可以传多个</td>
+<td>redis.lpush(‘list’, 0)</td>
+<td>4，list大小</td>
+</tr>
+<tr>
+<td>llen(name)</td>
+<td>返回key为name的list的长度</td>
+<td>redis.llen(‘list’)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>lrange(name, start, end)</td>
+<td>返回key为name的list中start至end之间的元素</td>
+<td>redis.lrange(‘list’, 1, 3)</td>
+<td>[b’3’, b’2’, b’1’]</td>
+</tr>
+<tr>
+<td>ltrim(name, start, end)</td>
+<td>截取key为name的list，保留索引为start到end的内容</td>
+<td>ltrim(‘list’, 1, 3)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>lindex(name, index)</td>
+<td>返回key为name的list中index位置的元素</td>
+<td>redis.lindex(‘list’, 1)</td>
+<td>b’2’</td>
+</tr>
+<tr>
+<td>lset(name, index, value)</td>
+<td>给key为name的list中index位置的元素赋值，越界则报错</td>
+<td>redis.lset(‘list’, 1, 5)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>lrem(name, count, value)</td>
+<td>删除count个key的list中值为value的元素</td>
+<td>redis.lrem(‘list’, 2, 3)</td>
+<td>1，即删除的个数</td>
+</tr>
+<tr>
+<td>lpop(name)</td>
+<td>返回并删除key为name的list中的首元素</td>
+<td>redis.lpop(‘list’)</td>
+<td>b’5’</td>
+</tr>
+<tr>
+<td>rpop(name)</td>
+<td>返回并删除key为name的list中的尾元素</td>
+<td>redis.rpop(‘list’)</td>
+<td>b’2’</td>
+</tr>
+<tr>
+<td>blpop(keys, timeout=0)</td>
+<td>返回并删除名称为在keys中的list中的首元素，如果list为空，则会一直阻塞等待</td>
+<td>redis.blpop(‘list’)</td>
+<td>[b’5’]</td>
+</tr>
+<tr>
+<td>brpop(keys, timeout=0)</td>
+<td>返回并删除key为name的list中的尾元素，如果list为空，则会一直阻塞等待</td>
+<td>redis.brpop(‘list’)</td>
+<td>[b’2’]</td>
+</tr>
+<tr>
+<td> rpoplpush(src, dst)</td>
+<td>返回并删除名称为src的list的尾元素，并将该元素添加到名称为dst的list的头部</td>
+<td>redis.rpoplpush(‘list’, ‘list2’)</td>
+<td>b’2’</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Set操作"><a href="#Set操作" class="headerlink" title="Set操作"></a>Set操作</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sadd(name, *values)</td>
+<td>向key为name的set中添加元素</td>
+<td>redis.sadd(‘tags’, ‘Book’, ‘Tea’, ‘Coffee’)</td>
+<td>3，即插入的数据个数</td>
+</tr>
+<tr>
+<td>srem(name, *values)</td>
+<td>从key为name的set中删除元素</td>
+<td>redis.srem(‘tags’, ‘Book’)</td>
+<td>1，即删除的数据个数</td>
+</tr>
+<tr>
+<td>spop(name)</td>
+<td>随机返回并删除key为name的set中一个元素</td>
+<td>redis.spop(‘tags’)</td>
+<td>b’Tea’</td>
+</tr>
+<tr>
+<td>smove(src, dst, value)</td>
+<td>从src对应的set中移除元素并添加到dst对应的set中</td>
+<td>redis.smove(‘tags’, ‘tags2’, ‘Coffee’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>scard(name)</td>
+<td>返回key为name的set的元素个数</td>
+<td>redis.scard(‘tags’)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>sismember(name, value)</td>
+<td>测试member是否是key为name的set的元素</td>
+<td>redis.sismember(‘tags’, ‘Book’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sinter(keys, *args)</td>
+<td>返回所有给定key的set的交集</td>
+<td>redis.sinter([‘tags’, ‘tags2’])</td>
+<td>{b’Coffee’}</td>
+</tr>
+<tr>
+<td>sinterstore(dest, keys, *args)</td>
+<td>求交集并将交集保存到dest的集合</td>
+<td>redis.sinterstore(‘inttag’, [‘tags’, ‘tags2’])</td>
+<td>1</td>
+</tr>
+<tr>
+<td>sunion(keys, *args)</td>
+<td>返回所有给定key的set的并集</td>
+<td>redis.sunion([‘tags’, ‘tags2’])</td>
+<td>{b’Coffee’, b’Book’, b’Pen’}</td>
+</tr>
+<tr>
+<td>sunionstore(dest, keys, *args)</td>
+<td>求并集并将并集保存到dest的集合</td>
+<td>redis.sunionstore(‘inttag’, [‘tags’, ‘tags2’])</td>
+<td>3</td>
+</tr>
+<tr>
+<td>sdiff(keys, *args)</td>
+<td>返回所有给定key的set的差集</td>
+<td>redis.sdiff([‘tags’, ‘tags2’])</td>
+<td>{b’Book’, b’Pen’}</td>
+</tr>
+<tr>
+<td>sdiffstore(dest, keys, *args)</td>
+<td>求差集并将差集保存到dest的集合</td>
+<td>redis.sdiffstore(‘inttag’, [‘tags’, ‘tags2’])</td>
+<td>3</td>
+</tr>
+<tr>
+<td>smembers(name)</td>
+<td>返回key为name的set的所有元素</td>
+<td>redis.smembers(‘tags’)</td>
+<td>{b’Pen’, b’Book’, b’Coffee’}</td>
+</tr>
+<tr>
+<td>srandmember(name)</td>
+<td>随机返回key为name的set的一个元素，但不删除元素</td>
+<td>redis.srandmember(‘tags’)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="Sorted-Set操作"><a href="#Sorted-Set操作" class="headerlink" title="Sorted Set操作"></a>Sorted Set操作</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zadd(name, args, *kwargs)</td>
+<td>向key为name的zset中添加元素member，score用于排序。如果该元素存在，则更新其顺序</td>
+<td>redis.zadd(‘grade’, 100, ‘Bob’, 98, ‘Mike’)</td>
+<td>2，即添加的元素个数</td>
+</tr>
+<tr>
+<td>zrem(name, *values)</td>
+<td>删除key为name的zset中的元素</td>
+<td>redis.zrem(‘grade’, ‘Mike’)</td>
+<td>1，即删除的元素个数</td>
+</tr>
+<tr>
+<td>zincrby(name, value, amount=1)</td>
+<td>如果在key为name的zset中已经存在元素value，则该元素的score增加amount，否则向该集合中添加该元素，其score的值为amount</td>
+<td>redis.zincrby(‘grade’, ‘Bob’, -2)</td>
+<td>98.0，即修改后的值</td>
+</tr>
+<tr>
+<td>zrank(name, value)</td>
+<td>返回key为name的zset中元素的排名（按score从小到大排序）即下标</td>
+<td>redis.zrank(‘grade’, ‘Amy’)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>zrevrank(name, value)</td>
+<td>返回key为name的zset中元素的倒数排名（按score从大到小排序）即下标</td>
+<td>redis.zrevrank(‘grade’, ‘Amy’)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>zrevrange(name, start, end, withscores=False)</td>
+<td>返回key为name的zset（按score从大到小排序）中的index从start到end的所有元素</td>
+<td>redis.zrevrange(‘grade’, 0, 3)</td>
+<td>[b’Bob’, b’Mike’, b’Amy’, b’James’]</td>
+</tr>
+<tr>
+<td>zrangebyscore(name, min, max, start=None, num=None, withscores=False)</td>
+<td>返回key为name的zset中score在给定区间的元素</td>
+<td>redis.zrangebyscore(‘grade’, 80, 95)</td>
+<td>[b’Amy’, b’James’]</td>
+</tr>
+<tr>
+<td>zcount(name, min, max)</td>
+<td>返回key为name的zset中score在给定区间的数量</td>
+<td>redis.zcount(‘grade’, 80, 95)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>zcard(name)</td>
+<td>返回key为name的zset的元素个数</td>
+<td>redis.zcard(‘grade’)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>zremrangebyrank(name, min, max)</td>
+<td>删除key为name的zset中排名在给定区间的元素</td>
+<td>redis.zremrangebyrank(‘grade’, 0, 0)</td>
+<td>1，即删除的元素个数</td>
+</tr>
+<tr>
+<td>zremrangebyscore(name, min, max)</td>
+<td>删除key为name的zset中score在给定区间的元素</td>
+<td>redis.zremrangebyscore(‘grade’, 80, 90)</td>
+<td>1，即删除的元素个数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Hash操作"><a href="#Hash操作" class="headerlink" title="Hash操作"></a>Hash操作</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hset(name, key, value)</td>
+<td>向key为name的hash中添加映射</td>
+<td>hset(‘price’, ‘cake’, 5)</td>
+<td>1，即添加的映射个数</td>
+</tr>
+<tr>
+<td>hsetnx(name, key, value)</td>
+<td>向key为name的hash中添加映射，如果映射键名不存在</td>
+<td>hsetnx(‘price’, ‘book’, 6)</td>
+<td>1，即添加的映射个数</td>
+</tr>
+<tr>
+<td>hget(name, key)</td>
+<td>返回key为name的hash中field对应的value</td>
+<td>redis.hget(‘price’, ‘cake’)</td>
+<td>5</td>
+</tr>
+<tr>
+<td>hmget(name, keys, *args)</td>
+<td>返回key为name的hash中各个键对应的value</td>
+<td>redis.hmget(‘price’, [‘apple’, ‘orange’])</td>
+<td>[b’3’, b’7’]</td>
+</tr>
+<tr>
+<td>hmset(name, mapping)</td>
+<td>向key为name的hash中批量添加映射</td>
+<td>redis.hmset(‘price’, {‘banana’: 2, ‘pear’: 6})</td>
+<td>True</td>
+</tr>
+<tr>
+<td>hincrby(name, key, amount=1)</td>
+<td>将key为name的hash中映射的value增加amount</td>
+<td>redis.hincrby(‘price’, ‘apple’, 3)</td>
+<td>6，修改后的值</td>
+</tr>
+<tr>
+<td>hexists(name, key)</td>
+<td>key为namehash中是否存在键名为key的映射</td>
+<td>redis.hexists(‘price’, ‘banana’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>hdel(name, *keys)</td>
+<td>key为namehash中删除键名为key的映射</td>
+<td>redis.hdel(‘price’, ‘banana’)</td>
+<td>True</td>
+</tr>
+<tr>
+<td>hlen(name)</td>
+<td>从key为name的hash中获取映射个数</td>
+<td>redis.hlen(‘price’)</td>
+<td>6</td>
+</tr>
+<tr>
+<td>hkeys(name)</td>
+<td>从key为name的hash中获取所有映射键名</td>
+<td>redis.hkeys(‘price’)</td>
+<td>[b’cake’, b’book’, b’banana’, b’pear’]</td>
+</tr>
+<tr>
+<td>hvals(name)</td>
+<td>从key为name的hash中获取所有映射键值</td>
+<td>redis.hvals(‘price’)</td>
+<td>[b’5’, b’6’, b’2’, b’6’]</td>
+</tr>
+<tr>
+<td>hgetall(name)</td>
+<td>从key为name的hash中获取所有映射键值对</td>
+<td>redis.hgetall(‘price’)</td>
+<td>{b’cake’: b’5’, b’book’: b’6’, b’orange’: b’7’, b’pear’: b’6’}</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/01/openmediavault-omv3升级omv4-问题解决/" rel="next" title="openmediavault omv3升级omv4">
+                <i class="fa fa-chevron-left"></i> openmediavault omv3升级omv4
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/29/阿里云ECS挂载数据磁盘/" rel="prev" title="阿里云ECS挂载数据磁盘">
+                阿里云ECS挂载数据磁盘 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Vcancy" />
+            
+              <p class="site-author-name" itemprop="name">Vcancy</p>
+              <p class="site-description motion-element" itemprop="description">TO BE OR NOT TO BE.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">34</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/vcancy" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:yujie.teddy@outlook.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#String操作"><span class="nav-number">1.</span> <span class="nav-text">String操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Key操作"><span class="nav-number">2.</span> <span class="nav-text">Key操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List操作"><span class="nav-number">3.</span> <span class="nav-text">List操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Set操作"><span class="nav-number">4.</span> <span class="nav-text">Set操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sorted-Set操作"><span class="nav-number">5.</span> <span class="nav-text">Sorted Set操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash操作"><span class="nav-number">6.</span> <span class="nav-text">Hash操作</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vcancy</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.6</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.6"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.6"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.6"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.6"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.6"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
