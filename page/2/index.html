@@ -312,6 +312,160 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://vcancy.github.io/2018/05/26/树莓派与Arduino串口通讯获取DH11温度湿度/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Vcancy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vcancy's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/26/树莓派与Arduino串口通讯获取DH11温度湿度/" itemprop="url">树莓派与Arduino串口通讯获取DH11温度湿度</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-26T23:23:00+08:00">2018-05-26</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/开源硬件/" itemprop="url" rel="index"><span itemprop="name">开源硬件</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文记录通过树莓派USB连接Arduino进行通讯的过程。<br>实现的功能：<br>Arduino上连接机智云GoKit开发套件，获取DH11温度与湿度返回给树莓派。</p>
+<h3 id="原材料："><a href="#原材料：" class="headerlink" title="原材料："></a>原材料：</h3><p>树莓派b3+<br>Arduino Uno R3</p>
+<h3 id="Arduino代码编写"><a href="#Arduino代码编写" class="headerlink" title="Arduino代码编写"></a>Arduino代码编写</h3><p>首先我们需要调用DHT获取温度湿度数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;DHT.h&gt;</span><br><span class="line"></span><br><span class="line">#define   DHTPIN    3</span><br><span class="line">#define DHTTYPE    DHT11</span><br><span class="line"></span><br><span class="line">DHT dht(DHTPIN, DHTTYPE);</span><br><span class="line"></span><br><span class="line">void setup() &#123;</span><br><span class="line">  // put your setup code here, to run once:</span><br><span class="line"></span><br><span class="line">  Serial.begin(9600);</span><br><span class="line"></span><br><span class="line">  dht.begin();</span><br><span class="line"></span><br><span class="line">  Serial.println(&quot;Hi Vcancy. Arduino is running...&quot;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  Arduino loop</span><br><span class="line">  @param none</span><br><span class="line">  @return none</span><br><span class="line">*/</span><br><span class="line">char target[] = &quot;GET TH&quot;;</span><br><span class="line"></span><br><span class="line">void loop() &#123;</span><br><span class="line">  // 每次等待2秒后再输出（这里必须等大于1秒，不然不准确）</span><br><span class="line">  delay(2000);</span><br><span class="line">  // 从串口读数据并判断</span><br><span class="line">  if (Serial.available() &gt; 0) &#123;</span><br><span class="line">    if ( Serial.find(target)) &#123;</span><br><span class="line">      // 获取温度或者湿度需要250毫秒!</span><br><span class="line">      // 传感器获取到的温度和湿度可能是2秒内的</span><br><span class="line"></span><br><span class="line">      float h = dht.readHumidity();// 读取当前的湿度</span><br><span class="line"></span><br><span class="line">      float t = dht.readTemperature(); // 读取当前的温度，单位C</span><br><span class="line"></span><br><span class="line">      float f = dht.readTemperature(true);//读取当前的温度，单位F</span><br><span class="line"></span><br><span class="line">      // 如果读取失败则退出，再读取一次</span><br><span class="line">      if (isnan(h) || isnan(t) || isnan(f)) &#123;</span><br><span class="line">        Serial.println(&quot;Failed to read from DHT sensor!&quot;);</span><br><span class="line">        return;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      // 读取体感温度，单位F</span><br><span class="line">      float hif = dht.computeHeatIndex(f, h);</span><br><span class="line">      // 读取体感温度，单位C</span><br><span class="line">      float hic = dht.computeHeatIndex(t, h, false);</span><br><span class="line"></span><br><span class="line">      Serial.print(&quot;湿度: &quot;);</span><br><span class="line">      Serial.print(h);</span><br><span class="line">      Serial.print(&quot; %\t&quot;);</span><br><span class="line">      Serial.print(&quot;温度: &quot;);</span><br><span class="line">      Serial.print(t);</span><br><span class="line">      Serial.print(&quot; *C &quot;);</span><br><span class="line">      Serial.print(f);</span><br><span class="line">      Serial.print(&quot; *F\t&quot;);</span><br><span class="line">      Serial.print(&quot;体感温度: &quot;);</span><br><span class="line">      Serial.print(hic);</span><br><span class="line">      Serial.print(&quot; *C &quot;);</span><br><span class="line">      Serial.print(hif);</span><br><span class="line">      Serial.println(&quot; *F&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>串口调试：输入 “GET TH”，串口返回数据</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2981143-219c6d8d566f219e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h3 id="树莓派"><a href="#树莓派" class="headerlink" title="树莓派"></a>树莓派</h3><p>树莓派USB连接到Arduino</p>
+<p>  ls /dev</p>
+<p>找到Arduino的串口地址：/dev/ttyUSB0</p>
+<p>编写一个python程序，调用串口获取数据。</p>
+<p>安装pyserial，串口库<br>  pip install pyserial</p>
+<p>编写一个python脚本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import serial</span><br><span class="line">ser = serial.Serial(&apos;/dev/ttyUSB0&apos;, 9600, timeout=1)</span><br><span class="line"></span><br><span class="line">try:</span><br><span class="line">    while 1:</span><br><span class="line">        ser.write(b&quot;GET TH&quot;)</span><br><span class="line">        response = str(ser.readline().decode())</span><br><span class="line">        if response.startswith(&apos;湿度:&apos;):</span><br><span class="line">            print(response.strip(&apos;\n&apos;))</span><br><span class="line">except KeyboardInterrupt:</span><br><span class="line">    ser.close()</span><br></pre></td></tr></table></figure></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2981143-b4d53cf0ec084a10.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://vcancy.github.io/2018/05/24/Hbase之happybase-TTransportException-Broken-pipe-分析二/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1668,165 +1822,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://vcancy.github.io/2018/05/10/《联盟》/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Vcancy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Vcancy's Home">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/10/《联盟》/" itemprop="url">《联盟》</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-10T08:49:00+08:00">2018-05-10</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/书/" itemprop="url" rel="index"><span itemprop="name">书</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>《联盟》 里德霍夫曼</p>
-<p>新的互联网时代背景下，人们已经从传统的终身职员转变为自由职员。公司与员工达成联盟关系，公司为员工提供有利于职业发展的环境、资源、机会，员工通过个人成长为公司创造价值，也为接下来的职业生涯增加资本。</p>
-<h4 id="如何达成联盟关系"><a href="#如何达成联盟关系" class="headerlink" title="如何达成联盟关系"></a>如何达成联盟关系</h4><h5 id="通过诚实对话建立互信"><a href="#通过诚实对话建立互信" class="headerlink" title="通过诚实对话建立互信"></a>通过诚实对话建立互信</h5><p>公司承诺员工在职期间的职业能力提升</p>
-<p>员工承诺在职期间完成任务、解决问题、创造价值</p>
-<h5 id="任期制"><a href="#任期制" class="headerlink" title="任期制"></a>任期制</h5><p>轮转期：双方判断对方是否适合</p>
-<p>转变期：员工为公司产生价值，公司为员工创建职业提升条件</p>
-<p>基础期：员工和公司的目标和价值一致</p>
-<h5 id="利用好员工人脉关系"><a href="#利用好员工人脉关系" class="headerlink" title="利用好员工人脉关系"></a>利用好员工人脉关系</h5><p>通过员工人脉为公司发展、决策提供信息</p>
-<p>利用好前员工资源</p>
-<p>总结：</p>
-<ol>
-<li><p>拿出彼此诚意（公司类似球队非家庭）</p>
-</li>
-<li><p>适合就干 (互利才能共赢)</p>
-</li>
-<li><p>不适合就散（保持联系）</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1878,7 +1873,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-count">67</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2002,7 +1997,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">34</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
